@@ -6,7 +6,13 @@ export function isEmail(email : String) {
 }
 
 export function isPassword(password : String) {
-    if (password.length > 8) { return true; }
+    if (password.length > 8 && typeof(password) === 'string') { return true; }
+    
+    return false;
+}
+
+export function isUsername(username : String) {
+    if (username.length > 0 && typeof(username) === 'string') { return true; }
     
     return false;
 }

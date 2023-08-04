@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Response } from "express";
-import { MainErrorCode, MainError, MainErrorMessage } from "../../product/error/main_error";
+import { MainErrorCode, MainError, MainErrorMessage } from "../product/error/main_error";
 
 interface ILocationService {
     getLocation(ip : string, res : Response): Promise<{city : string, country : string}>;

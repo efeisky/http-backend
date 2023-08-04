@@ -1,13 +1,8 @@
 export enum RouterPaths {
   default = '/',
-  login = '/login',
+  login = '/api/login',
+  register = '/api/register',
+  verify = '/api/oauth/verify',
+  reset = '/api/oauth/reset',
   notFound = '*',
-}
-
-type ParamsDictionaryWithRoutes = {
-  [K in keyof typeof RouterPaths]: string;
-};
-
-declare module 'express-serve-static-core' {
-  interface ParamsDictionary extends ParamsDictionaryWithRoutes {}
 }

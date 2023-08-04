@@ -6,7 +6,6 @@ import UserModel from "./../Schema/user_schema";
 
 export class LoginConnection {
     private db_connection = new DatabaseConfig();
-    private redis_connection = new RedisConfig();
 
     async LoginUser(model: LoginModel, res: Response) {
         await this.db_connection.connect(res);
@@ -22,19 +21,18 @@ export class LoginConnection {
             return false
         }
     }
-    
-    async CheckIPAttemps(model :LoginModel, res : Response) {
-        await this.redis_connection.connectClient(res);
-        const attemp = await this.redis_connection.get(model.ip,res);
-        return JSON.parse(attemp || '[{"date": "broken"}]');
-    }
 
-    async SetIPAttemp(model :LoginModel,filteredList : Array<{ date: string }>, res : Response) {
-        await this.redis_connection.connectClient(res);
-        const dateData = {
-            "date" : new Date().toISOString()
+    async setLoginStatus(id: string, status : boolean, res: Response) {
+        await this.db_connection.connect(res);
+        try {
+            const modify = await UserModel.updateOne({unique_id : id}, { $set: {login_status : status} });
+            if (modify.modifiedCount > 0) {
+                return true;
+            }else{
+                return false;
+            }
+        } catch (err) {
+            return false
         }
-        filteredList.push(dateData)
-        await this.redis_connection.set(model.ip,JSON.stringify(filteredList), res)
     }
 }

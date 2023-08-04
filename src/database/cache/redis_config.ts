@@ -1,12 +1,13 @@
 import {createClient} from "redis";
-import { LoginError, LoginErrorCode, LoginErrorMessage } from "../../product/error/login_error";
 import { Response } from "express";
+import { MainError, MainErrorCode, MainErrorMessage } from "../../product/error/main_error";
 
 class RedisConfig {
     private client: any;
-    private error = new LoginError()
+    private error = new MainError()
     private createError(res : Response) {
-        this.error.CreateError(res, LoginErrorCode.UnAvailableService, LoginErrorMessage.UnAvailableService)
+        this.error.CreateError(res, MainErrorCode.RedisServiceError, MainErrorMessage.RedisServiceError);
+        return;
     }
     public connectClient(res : Response) {
         try {
@@ -42,6 +43,19 @@ class RedisConfig {
             await this.client.connect();
             
             await this.client.set(key, value);
+
+            await this.client.disconnect();
+
+        } catch (err) {
+            this.createError(res)
+        }
+    }
+
+    public async delete(key : string, res : Response) {
+        try {
+            await this.client.connect();
+            
+            await this.client.del(key);
 
             await this.client.disconnect();
 
