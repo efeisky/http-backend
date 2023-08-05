@@ -1,21 +1,21 @@
 import { Response } from "express";
 import { SecurityService } from "../../../service/security_service";
-import { TokenTypes } from "../../../security/auth/token_type";
-import { VerifyModel } from "../models/verify_model";
+import { ResetModel } from "../models/reset_model";
 import { TokenError, TokenErrorCode, TokenErrorMessage } from "../../../product/error/token_error";
 import { TokenStructure } from "../../../product/constant/token_structure";
-import { VerifyConnection } from "../../../database/connection/verify_connection";
+import { TokenTypes } from "../../../security/auth/token_type";
+import { ResetConnection } from "../../../database/connection/reset_connection";
 
-interface IVerifyService {
-    checkToken(res : Response, type : TokenTypes, user : VerifyModel): Promise<void>;
+interface IResetService {
+    checkToken(res : Response, type : TokenTypes, user : ResetModel): Promise<void>;
 }
 
-export class VerifyService implements IVerifyService {
+export class ResetService implements IResetService {
     private securityService = new SecurityService();
-    private connection = new VerifyConnection();
+    private connection = new ResetConnection();
     private error = new TokenError();
 
-    async checkToken(res : Response, type : TokenTypes, user : VerifyModel): Promise<void> {
+    async checkToken(res : Response, type : TokenTypes, user : ResetModel): Promise<void> {
         const data = await this.securityService.checkTokenValidation(res, user.token);
         if (data === false) {
             this.error.CreateError(res, TokenErrorCode.InvalidToken, TokenErrorMessage.InvalidToken);
@@ -33,7 +33,7 @@ export class VerifyService implements IVerifyService {
             return;
         }
 
-        const modifyStatus = await this.connection.SetVerify(tokenData.token_secret, true, res);
+        const modifyStatus = await this.connection.SetReset(tokenData.token_secret, res);
         if (!modifyStatus) {
             this.error.CreateError(res, TokenErrorCode.ServiceError, TokenErrorMessage.ServiceError);
             return;

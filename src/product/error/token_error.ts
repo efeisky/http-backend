@@ -2,12 +2,14 @@ import { Response } from 'express';
 
 export enum TokenErrorCode {
     InvalidToken = 401,
+    InvalidCredentials = 401,
     TokenVerifyError = 401,
     TokenDateError = 401,
     ServiceError = 500,
 }
 export enum TokenErrorMessage {
     InvalidToken = "Geçersiz Token!",
+    InvalidCredentials = "Eksik parametre girişi!",
     TokenVerifyError = "Token doğrulaması sırasında bir hata gerçekleşti!",
     TokenDateError = "Tokenın zamanı geçmiş tekrardan giriş yaparak yeniden deneyiniz!",
     ServiceError = "Sistemsel bir hata gerçekleşti. Lütfen daha sonra tekrar deneyiniz!",

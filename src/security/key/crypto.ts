@@ -20,16 +20,18 @@ async function encrypt(data: string,createdSalt : Buffer, password: string): Pro
   return { encryptedData: `${iv.toString('base64')}:${createdSalt.toString('base64')}:${encryptedData}`, salt: createdSalt.toString('base64') };
 }
 
-async function decrypt(encryptedData: string, userSalt: string, password: string,): Promise<string> {
+async function decrypt(encryptedData: string, userSalt: string, password: string): Promise<string> {
   const [ivString, saltString, encryptedString] = encryptedData.split(':');
   const iv = Buffer.from(ivString, 'base64');
   const salt = Buffer.from(userSalt, 'base64');
   const secretKey = await generateSecretKey(password, salt);
+  console.log(secretKey);
   const decipher = crypto.createDecipheriv('aes-256-cbc', secretKey, iv);
   let decryptedData = decipher.update(encryptedString, 'base64', 'utf8');
   decryptedData += decipher.final('utf8');
   return decryptedData;
 }
+
 function setUniqueID(): string {
   return crypto.randomUUID();
 }

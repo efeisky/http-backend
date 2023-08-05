@@ -1,6 +1,7 @@
 export enum TokenTypes{
     Verify = "Verify",
-    Auth = "Auth",
+    Reset = "Reset",
+    Auth = "Auth"
 }
 export enum TokenCookieTypes{
     SessionBased = "session-based",

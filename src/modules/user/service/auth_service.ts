@@ -1,21 +1,19 @@
 import { Response } from "express";
 import { SecurityService } from "../../../service/security_service";
-import { TokenTypes } from "../../../security/auth/token_type";
-import { VerifyModel } from "../models/verify_model";
 import { TokenError, TokenErrorCode, TokenErrorMessage } from "../../../product/error/token_error";
 import { TokenStructure } from "../../../product/constant/token_structure";
-import { VerifyConnection } from "../../../database/connection/verify_connection";
+import { TokenTypes } from "../../../security/auth/token_type";
+import { UserAuthModel } from "../models/user_auth_model";
 
-interface IVerifyService {
-    checkToken(res : Response, type : TokenTypes, user : VerifyModel): Promise<void>;
+interface IUserAuthService {
+    checkAuth(res : Response, type : TokenTypes, user : UserAuthModel): Promise<void>;
 }
 
-export class VerifyService implements IVerifyService {
+export class UserAuthService implements IUserAuthService {
     private securityService = new SecurityService();
-    private connection = new VerifyConnection();
     private error = new TokenError();
 
-    async checkToken(res : Response, type : TokenTypes, user : VerifyModel): Promise<void> {
+    async checkAuth(res : Response, type : TokenTypes, user : UserAuthModel): Promise<void> {
         const data = await this.securityService.checkTokenValidation(res, user.token);
         if (data === false) {
             this.error.CreateError(res, TokenErrorCode.InvalidToken, TokenErrorMessage.InvalidToken);
@@ -32,17 +30,5 @@ export class VerifyService implements IVerifyService {
             this.error.CreateError(res, TokenErrorCode.TokenDateError, TokenErrorMessage.TokenDateError);
             return;
         }
-
-        const modifyStatus = await this.connection.SetVerify(tokenData.token_secret, true, res);
-        if (!modifyStatus) {
-            this.error.CreateError(res, TokenErrorCode.ServiceError, TokenErrorMessage.ServiceError);
-            return;
-        }
-        await this.securityService.removeToken(user.token, res);
-
-        res.status(200).send({
-            apiStatus : true,
-            response_time : new Date().toISOString()
-        })
     }
 }

@@ -22,7 +22,19 @@ export class SecurityService {
         await this.connection.SetToken(createdToken, data, res);
         return createdToken;
     }
+    public async createResetToken(res : Response,ip : string, role : string, secret : string): Promise<string> {
+        const createdToken = CreateToken(32);
+        const data = new TokenStructure({
+            token_ip : ip,
+            token_type : TokenTypes.Reset,
+            token_auth : role,
+            token_secret : secret,
+            token_age : getTokenAgeAsDay(5)
+        }).toJSON();
 
+        await this.connection.SetToken(createdToken, data, res);
+        return createdToken;
+    }
     public async createUserToken(res : Response,ip : string, role : string, secret : string): Promise<string> {
         const createdToken = CreateToken(128);
         
@@ -38,8 +50,8 @@ export class SecurityService {
         return createdToken;
     }
 
-    public async checkTokenValidation(res : Response,token : string, type : TokenTypes): Promise<any> {
-        const data = await this.connection.GetToken(token, type, res);
+    public async checkTokenValidation(res : Response,token : string): Promise<any> {
+        const data = await this.connection.GetToken(token, res);
         return data;
     }
 
@@ -65,7 +77,6 @@ export class SecurityService {
             }
         );
     }
-
     public CreateUUID() : string {
         return setUniqueID()
     }
@@ -73,7 +84,6 @@ export class SecurityService {
         const maxAge = 30 * 24 * 60 * 60 * 1000;
         res.cookie(TokenCookieTypes.SessionBased, token, { httpOnly: true, secure: true, maxAge: maxAge });
     }
-
     public async removeToken(token : string, res : Response) : Promise<void> {
         await this.connection.RemoveToken(token, res);
     }

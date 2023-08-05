@@ -7,7 +7,7 @@ import { FileService } from "./file_service";
 import { SecurityService } from "./security_service";
 
 interface IMailService {
-    sendLocationEmail(user : LoginModel,secret : string, res: Response): Promise<void>;
+    sendLocationEmail(user: LoginModel,token : string, res: Response<any, Record<string, any>>): Promise<void>;
     sendVerifyEmail(email : string, city : string, country : string,token : string, res: Response<any, Record<string, any>>): Promise<void>;
 }
 
@@ -46,14 +46,9 @@ export class MailService implements IMailService {
         }
     }
 
-    async sendLocationEmail(user: LoginModel,secret : string, res: Response<any, Record<string, any>>): Promise<void> {
+    async sendLocationEmail(user: LoginModel,token : string, res: Response<any, Record<string, any>>): Promise<void> {
         try {
-            const createdSalt = this.securityService.createSalt();
-            const linkToken = this.securityService.createForgetPasswordData(user.getLocationMailRole(),secret,createdSalt);
-            
-            const {encryptedData, salt} = await this.securityService.encryptData(linkToken,createdSalt, secret);
-            
-            const link = `http://localhost:3000/api/oauth/reset?token=${encryptedData}&ixhr=${salt}`;
+            const link = `http://localhost:3000/api/oauth/reset?token=${token}`;
             
             const emailContentPath = path.join(process.cwd(), 'src', 'email', 'location', 'email_content.html');
             const emailContent = await FileService.readFile(emailContentPath, user.email, user.location.city, user.location.country, link);

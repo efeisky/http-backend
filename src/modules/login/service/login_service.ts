@@ -24,7 +24,8 @@ export class LoginService implements ILoginService {
             if(user.location.city === result.city && user.location.country === result.country && result.verify_status && result.account_status){
                 //Konum ile 'Bu sen misin?' Maili Gönderme
                 if (result.login_status) {
-                    await this.mailService.sendLocationEmail(user, result.unique_id, res);
+                    const locationToken = await this.securityService.createResetToken(res, user.ip, user.getLocationMailRole(), result.unique_id);
+                    await this.mailService.sendLocationEmail(user, locationToken, res);
                 }
             }
             else{
@@ -43,7 +44,8 @@ export class LoginService implements ILoginService {
 
                 //Konum ile 'Bu sen misin?' Maili Gönderme
                 if (result.login_status && (user.location.city !== result.city || user.location.country !== result.country)) {
-                    await this.mailService.sendLocationEmail(user, result.unique_id, res);
+                    const locationToken = await this.securityService.createResetToken(res, user.ip, user.getLocationMailRole(), result.unique_id);
+                    await this.mailService.sendLocationEmail(user, locationToken, res);
                 }
             }
 
