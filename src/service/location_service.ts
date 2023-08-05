@@ -11,7 +11,6 @@ export class LocationService implements ILocationService {
 
     async getLocation(ip: string, res: Response<any, Record<string, any>>): Promise<{city : string, country : string}> {
 
-        //TODO : APİ IP Adresi Seçilecek ipden alacak
         const token = 'fdc05c92530e5f'
         const apiUrl = `https://ipinfo.io/${ip}/json?token=${token}`;
         try {
